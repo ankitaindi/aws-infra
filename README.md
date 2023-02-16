@@ -1,4 +1,5 @@
-Assignment 3:
+Assignment 3
+
 
 Prerequisites:
 An AWS account
