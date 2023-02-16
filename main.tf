@@ -1,4 +1,4 @@
-resource "aws_vpc" "vpc_infra_2" {
+resource "aws_vpc" "vpc_infra_1" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_hostnames = var.vpc_enable_dns_hostnames
   enable_dns_support   = var.vpc_enable_dns_support
