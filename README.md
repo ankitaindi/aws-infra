@@ -2,8 +2,6 @@ Assignment 3
 
 
 Prerequisites:
-
-
 An AWS account
 1) AWS CLI installed on your system
 2) Terraform installed on your system
