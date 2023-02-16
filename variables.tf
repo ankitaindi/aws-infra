@@ -13,7 +13,7 @@ variable "provider_profile" {
 variable "vpc_cidr_block" {
   description = "CIDR for vpc infra"
   type        = string
-  default     = "10.0.0.0/16"
+  default     = "10.0.0.0/48"
 }
 
 variable "vpc_enable_dns_hostnames" {
