@@ -13,7 +13,7 @@ variable "provider_profile" {
 variable "vpc_cidr_block" {
   description = "CIDR for vpc infra"
   type        = string
-  default     = "10.1.0.0/16"
+  default     = "10.0.0.0/16"
 }
 
 variable "vpc_enable_dns_hostnames" {
@@ -49,13 +49,13 @@ variable "infra_display_name" {
 variable "public_subnet_cidrs" {
   type        = list(string)
   description = "Public Subnet CIDR values"
-  default     = ["10.1.1.0/24", "10.1.2.0/24", "10.1.3.0/24"]
+  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
 variable "private_subnet_cidrs" {
   type        = list(string)
   description = "Private Subnet CIDR values"
-  default     = ["10.1.4.0/24", "10.1.5.0/24", "10.1.6.0/24"]
+  default     = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 }
 
 variable "azs" {
@@ -69,6 +69,51 @@ variable "route_display_name" {
   type        = string
   default     = "public_route"
 }
+
+variable "route_display_name2" {
+  description = "Route table display name"
+  type        = string
+  default     = "private_route"
+}
+
+variable "amiId" {
+  description = "AMI ID"
+  type        = string
+  default     = "ami-08c3fff3c8d7f97b4"
+}
+
+variable "instance_type" {
+  description = "Instance Type"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "key_name" {
+  description = "Key Pair"
+  type        = string
+  default     = "dev-ssh"
+}
+
+variable "instance_vol_type" {
+  description = "Instance Volume Type"
+  type        = string
+  default     = "gp2"
+}
+
+variable "instance_vol_size" {
+  description = "Instance Volume Type"
+  type        = number
+  default     = 50
+}
+
+
+
+
+
+
+
+
+
 
 
 
