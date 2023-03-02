@@ -4,6 +4,10 @@ variable "provider_region" {
   default     = "us-east-1"
 }
 
+# variable "amis" {
+#   type = map
+# }
+
 variable "provider_profile" {
   description = "Profile for Provider"
   type        = string
@@ -79,7 +83,7 @@ variable "route_display_name2" {
 variable "amiId" {
   description = "AMI ID"
   type        = string
-  default     = "ami-08c3fff3c8d7f97b4"
+  default     = "ami-08b80041d0dd5b1bd"
 }
 
 variable "instance_type" {
@@ -106,14 +110,85 @@ variable "instance_vol_size" {
   default     = 50
 }
 
+variable "db_storage_size" {
+  description = "Size of db"
+  type        = number
+  default     = 20
+}
+
+variable "db_instance_class" {
+  description = "Instance class for RDS"
+  default     = "db.t3.micro"
+}
+
+variable "db_engine" {
+  description = "DB engine for RDS"
+  default     = "mysql"
+}
+
+variable "db_engine_version" {
+  description = "DB engine version for RDS"
+  default     = "8.0.32"
+}
+
+variable "db_name" {
+  description = "DB name"
+  default     = "csye6225"
+}
+
+variable "db_username" {
+  description = "DB username"
+  default     = "csye6225"
+}
+
+variable "db_password" {
+  description = "DB password"
+  default     = "Masters-2023"
+}
+
+
+variable "db_public_access" {
+  description = "DB public accessibility"
+  type        = bool
+  default     = false
+}
+
+variable "db_multiaz" {
+  description = "DB multi AZ"
+  type        = bool
+  default     = false
+}
+
+# variable "instance_type" {
+#   description = "EC2 instance type"
+#   type        = string
+#   default     = "t2.micro"
+# }
+
+# variable "key_name" {
+#   description = "Name of key"
+#   type        = string
+# }
 
 
 
+# variable "instance_vol_type" {
+#   description = "EC2 volume type"
+#   type        = string
+#   default     = "gp2"
+# }
 
+# variable "instance_vol_size" {
+#   description = "EC2 volume size"
+#   type        = number
+#   default     = 20
+# }
 
-
-
-
+# variable "instance_subnet" {
+#   description = "EC2 subnet serial"
+#   type        = number
+#   default     = 1
+# }
 
 
 
