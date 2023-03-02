@@ -83,7 +83,7 @@ variable "route_display_name2" {
 variable "amiId" {
   description = "AMI ID"
   type        = string
-  default     = "ami-08b80041d0dd5b1bd"
+  default     = "ami-090f05d7834b65a80"
 }
 
 variable "instance_type" {
