@@ -284,14 +284,17 @@ resource "aws_instance" "ec2" {
   user_data = <<EOF
 #!/bin/bash
 echo "# App Environment Variables"
-echo "export DB_URL=jdbc:mysql://${aws_db_instance.rds.address}:3306/${var.db_name}" >> /etc/environment
-echo "export DBUSERNAME=${var.db_username}" >> /etc/environment
-echo "export DBPASSWORD=${var.db_password}" >> /etc/environment
-echo "export S3_BUCKET_NAME=${aws_s3_bucket.s3_bucket.id}" >> /etc/environment
-echo "export FILESYSTEM_DRIVER=s3" >> /etc/environment
-echo "export REGION=${var.provider_region}" >> /etc/environment
+echo "DB_URL=jdbc:mysql://${aws_db_instance.rds.address}:3306/${var.db_name}" >> /etc/environment
+echo "DBUSERNAME=${var.db_username}" >> /etc/environment
+echo "DBPASSWORD=${var.db_password}" >> /etc/environment
+echo "S3_BUCKET_NAME=${aws_s3_bucket.s3_bucket.id}" >> /etc/environment
+echo "FILESYSTEM_DRIVER=s3" >> /etc/environment
+echo "REGION=${var.provider_region}" >> /etc/environment
+sudo systemctl enable health-check-api.service
+sudo systemctl start health-check-api.service
+sudo systemctl status health-check-api.service
 sudo chown -R www-data:www-data /var/www
-usermod -a -G www-data ubuntu
+sudo usermod -a -G www-data ubuntu
 EOF
   tags = {
     "Name" = "ec2"
