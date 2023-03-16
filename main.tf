@@ -301,3 +301,61 @@ EOF
   }
   depends_on = [aws_db_instance.rds]
 }
+
+
+data "aws_route53_zone" "selected" {
+  name = var.domain_name
+}
+
+resource "aws_route53_record" "www" {
+  zone_id = data.aws_route53_zone.selected.zone_id
+  name    = data.aws_route53_zone.selected.name
+  type    = "A"
+  ttl     = "60"
+  records = [aws_instance.ec2.public_ip]
+}
+
+
+
+# resource "aws_route53_zone" "zone" {
+#   name         = "ankitaindi.me"
+#   private_zone = false
+# }
+
+
+
+# data "aws_route53_zone" "main" {
+#   zone_id      = "ankitaindi.me"
+#   private_zone = false
+# }
+
+# # resource "aws_route53_zone" "dev" {
+# #   name = "dev.example.com"
+
+# #   tags = {
+# #     Environment = "dev"
+# #   }
+# # }
+
+
+# resource "aws_route53_record" "dev-ns" {
+#   zone_id = aws_route53_zone.main.zone_id
+#   name    = "dev.ankitaindi.me"
+#   type    = "A"
+#   ttl     = "30"
+#   records = "dev.ankitaindi.me"
+# }
+
+
+# resource "aws_route53_record" "www" {
+#   depends_on = [aws_instance.ec2]
+#   zone_id    = data.aws_route53_zone.zone.zone_id
+#   name       = data.aws_route53_zone.zone.name
+#   type       = "A"
+#   ttl        = "60"
+#   # alias {
+#   #   name                   = aws_lb.aws_lb_app.dns_name
+#   #   zone_id                = aws_lb.aws_lb_app.zone_id
+#   #   evaluate_target_health = false
+#   # }
+# }
