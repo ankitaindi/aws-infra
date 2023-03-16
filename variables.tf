@@ -83,7 +83,7 @@ variable "route_display_name2" {
 variable "amiId" {
   description = "AMI ID"
   type        = string
-  default     = "ami-090f05d7834b65a80"
+  default     = "ami-015c711b7591eef0e"
 }
 
 variable "instance_type" {
@@ -157,6 +157,12 @@ variable "db_multiaz" {
   description = "DB multi AZ"
   type        = bool
   default     = false
+}
+
+variable "domain_name" {
+  description = "Name of domain"
+  type        = string
+  default     = "dev.ankitaindi.me"
 }
 
 # variable "instance_type" {
