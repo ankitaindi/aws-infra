@@ -83,7 +83,7 @@ variable "route_display_name2" {
 variable "amiId" {
   description = "AMI ID"
   type        = string
-  default     = "ami-015c711b7591eef0e"
+  default     = "ami-0486c3609c16114df"
 }
 
 variable "instance_type" {
@@ -164,37 +164,4 @@ variable "domain_name" {
   type        = string
   default     = "dev.ankitaindi.me"
 }
-
-# variable "instance_type" {
-#   description = "EC2 instance type"
-#   type        = string
-#   default     = "t2.micro"
-# }
-
-# variable "key_name" {
-#   description = "Name of key"
-#   type        = string
-# }
-
-
-
-# variable "instance_vol_type" {
-#   description = "EC2 volume type"
-#   type        = string
-#   default     = "gp2"
-# }
-
-# variable "instance_vol_size" {
-#   description = "EC2 volume size"
-#   type        = number
-#   default     = 20
-# }
-
-# variable "instance_subnet" {
-#   description = "EC2 subnet serial"
-#   type        = number
-#   default     = 1
-# }
-
-
 
