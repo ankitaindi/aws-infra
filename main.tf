@@ -211,6 +211,24 @@ data "aws_iam_policy_document" "policy_document" {
   depends_on = [aws_s3_bucket.s3_bucket]
 }
 
+
+# resource "aws_iam_policy_document" "policy_document" {
+#   name        = "WebAppS3"
+#   description = "policy for s3"
+
+#   policy = jsonencode({
+#     "Version" : "2012-10-17"
+#     "Statement" : [
+#       {
+#         "Action" : ["s3:DeleteObject", "s3:PutObject", "s3:GetObject", "s3:ListAllMyBuckets","s3:ListBucket"]
+#         "Effect" : "Allow"
+#         "Resource" : ["arn:aws:s3:::${aws_s3_bucket.s3_bucket.bucket}",
+#           "arn:aws:s3:::${aws_s3_bucket.s3_bucket.bucket}/*"]
+#       }
+#     ]
+#   })
+# }
+
 #iam policy for role
 resource "aws_iam_role_policy" "s3_policy" {
   name       = "tf-s3-policy"
@@ -315,47 +333,15 @@ resource "aws_route53_record" "www" {
   records = [aws_instance.ec2.public_ip]
 }
 
+data "aws_iam_policy" "agent_policy" {
+  arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "agent_policy_attachment" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = data.aws_iam_policy.agent_policy.arn
+}
 
 
-# resource "aws_route53_zone" "zone" {
-#   name         = "ankitaindi.me"
-#   private_zone = false
-# }
 
 
-
-# data "aws_route53_zone" "main" {
-#   zone_id      = "ankitaindi.me"
-#   private_zone = false
-# }
-
-# # resource "aws_route53_zone" "dev" {
-# #   name = "dev.example.com"
-
-# #   tags = {
-# #     Environment = "dev"
-# #   }
-# # }
-
-
-# resource "aws_route53_record" "dev-ns" {
-#   zone_id = aws_route53_zone.main.zone_id
-#   name    = "dev.ankitaindi.me"
-#   type    = "A"
-#   ttl     = "30"
-#   records = "dev.ankitaindi.me"
-# }
-
-
-# resource "aws_route53_record" "www" {
-#   depends_on = [aws_instance.ec2]
-#   zone_id    = data.aws_route53_zone.zone.zone_id
-#   name       = data.aws_route53_zone.zone.name
-#   type       = "A"
-#   ttl        = "60"
-#   # alias {
-#   #   name                   = aws_lb.aws_lb_app.dns_name
-#   #   zone_id                = aws_lb.aws_lb_app.zone_id
-#   #   evaluate_target_health = false
-#   # }
-# }
