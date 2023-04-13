@@ -78,12 +78,12 @@ resource "aws_security_group" "lb_sg" {
   description = "Security group for load balancer"
   vpc_id      = aws_vpc.vpc_infra_1.id
 
-  ingress {
-    from_port   = 80 # Allow HTTP traffic
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allow traffic from all IP addresses
-  }
+  # ingress {
+  #   from_port   = 80 # Allow HTTP traffic
+  #   to_port     = 80
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"] # Allow traffic from all IP addresses
+  # }
   ingress {
     from_port   = 443 # Allow SSH traffic
     to_port     = 443
@@ -280,6 +280,8 @@ resource "aws_db_instance" "rds" {
   multi_az               = var.db_multiaz
   parameter_group_name   = aws_db_parameter_group.rds-pg.name
   skip_final_snapshot    = true
+  storage_encrypted      = true
+  kms_key_id             = aws_kms_key.kms_key_rds.arn
   tags = {
     "Name" = "rds"
   }
@@ -362,7 +364,7 @@ resource "aws_launch_template" "lt" {
   instance_type = var.instance_type
   key_name      = var.key_name
   # associate_public_ip_address = "true"
-  #vpc_security_group_ids = [aws_security_group.lb_sg.id]
+  # vpc_security_group_ids = [aws_security_group.app_sg.id]
   user_data = base64encode(data.template_file.user_data.rendered)
   #     templatefile("user.tpl", {user_data = <<EOF
   # #!/bin/bash
@@ -387,6 +389,7 @@ resource "aws_launch_template" "lt" {
       volume_size           = var.instance_vol_size
       volume_type           = var.instance_vol_type
       delete_on_termination = true
+      encrypted             = true
     }
   }
   network_interfaces {
@@ -496,17 +499,25 @@ resource "aws_autoscaling_group" "asg" {
   desired_capacity    = 1
   default_cooldown    = 60
   launch_template {
-    id = aws_launch_template.lt.id
+    id      = aws_launch_template.lt.id
+    version = "$Latest"
   }
 
   target_group_arns = [
     aws_lb_target_group.alb_tg.arn
   ]
 }
+
+data "aws_acm_certificate" "issued_cert" {
+  domain   = var.domain_name
+  statuses = ["ISSUED"]
+}
+
 resource "aws_lb_listener" "front_end" {
   load_balancer_arn = aws_lb.lb.arn
-  port              = "80"
-  protocol          = "HTTP"
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = data.aws_acm_certificate.issued_cert.arn
   default_action {
     target_group_arn = aws_lb_target_group.alb_tg.arn
     type             = "forward"
@@ -567,3 +578,123 @@ resource "aws_cloudwatch_metric_alarm" "cpu-alarm-scaledown" {
   actions_enabled = true
   alarm_actions   = [aws_autoscaling_policy.cpu_policy_scaledown.arn]
 }
+
+
+
+# Encryptions
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_ebs_default_kms_key" "example" {
+  key_arn = aws_kms_key.kms_key_ebs.arn
+}
+
+
+
+//  ************* ebs kms key
+resource "aws_kms_key" "kms_key_ebs" {
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [{
+      "Sid" : "Enable IAM User Permissions for ebs volume",
+      "Effect" : "Allow",
+      "Principal" : {
+        "AWS" : "arn:aws:iam::${var.account_id}:root"
+      },
+      "Action" : "kms:*",
+      "Resource" : "*"
+      },
+      {
+        "Sid" : "Add service role",
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : "arn:aws:iam::${var.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+        },
+        "Action" : "kms:*",
+        "Resource" : "*"
+      }
+    ]
+  })
+}
+
+//  ************* rds kms key
+resource "aws_kms_key" "kms_key_rds" {
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [{
+      "Sid" : "Enable IAM User Permissions for RDS instance",
+      "Effect" : "Allow",
+      "Principal" : {
+        "AWS" : "arn:aws:iam::${var.account_id}:root"
+      },
+      "Action" : "kms:*",
+      "Resource" : "*"
+      },
+      {
+        "Sid" : "Add service role",
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : "arn:aws:iam::${var.account_id}:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
+        },
+        "Action" : "kms:*",
+        "Resource" : "*"
+      }
+    ]
+  })
+}
+
+
+//  ************* ebs iam  role 
+
+resource "aws_iam_role" "ebs_iam_role" {
+  name = "ebs-am-role"
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Action" : "sts:AssumeRole",
+        "Principal" : {
+          "Service" : "ebs.amazonaws.com"
+        },
+        "Effect" : "Allow"
+      }
+    ]
+  })
+}
+
+//  ************* rds iam  role 
+
+resource "aws_iam_role" "rds_iam_role" {
+  name = "rds-iam-role"
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Action" : "sts:AssumeRole",
+        "Principal" : {
+          "Service" : "rds.amazonaws.com"
+        },
+        "Effect" : "Allow"
+      }
+    ]
+  })
+}
+
+resource "aws_kms_grant" "ebs_key_attachment" {
+  depends_on        = [aws_kms_key.kms_key_ebs, aws_iam_role.ebs_iam_role]
+  name              = "ebs-key-attachment"
+  key_id            = aws_kms_key.kms_key_ebs.key_id
+  grantee_principal = aws_iam_role.ebs_iam_role.arn
+  operations        = ["Encrypt", "Decrypt", "GenerateDataKey"]
+
+}
+
+
+resource "aws_kms_grant" "rds_key_attachment" {
+  depends_on        = [aws_kms_key.kms_key_rds, aws_iam_role.rds_iam_role]
+  name              = "rds-key-attachment"
+  key_id            = aws_kms_key.kms_key_rds.key_id
+  grantee_principal = aws_iam_role.rds_iam_role.arn
+  operations        = ["Encrypt", "Decrypt", "GenerateDataKey"]
+}
+

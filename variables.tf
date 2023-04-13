@@ -83,7 +83,7 @@ variable "route_display_name2" {
 variable "amiId" {
   description = "AMI ID"
   type        = string
-  default     = "ami-032f8ad1efadc34cd"
+ 
 }
 
 variable "instance_type" {
@@ -165,3 +165,8 @@ variable "domain_name" {
   default     = "dev.ankitaindi.me"
 }
 
+variable "account_id" {
+  description = "Account id"
+  type        = string
+
+}
