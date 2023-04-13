@@ -11,7 +11,7 @@ variable "provider_region" {
 variable "provider_profile" {
   description = "Profile for Provider"
   type        = string
-  default     = "dev"
+  default     = "demo"
 }
 
 variable "vpc_cidr_block" {
@@ -83,7 +83,7 @@ variable "route_display_name2" {
 variable "amiId" {
   description = "AMI ID"
   type        = string
-  default     = "ami-032f8ad1efadc34cd"
+
 }
 
 variable "instance_type" {
@@ -95,7 +95,7 @@ variable "instance_type" {
 variable "key_name" {
   description = "Key Pair"
   type        = string
-  default     = "dev-ssh"
+  default     = "demo-ssh"
 }
 
 variable "instance_vol_type" {
@@ -165,3 +165,8 @@ variable "domain_name" {
   default     = "dev.ankitaindi.me"
 }
 
+variable "account_id" {
+  description = "Account id"
+  type        = string
+
+}
