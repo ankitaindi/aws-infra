@@ -364,8 +364,8 @@ resource "aws_launch_template" "lt" {
   instance_type = var.instance_type
   key_name      = var.key_name
   # associate_public_ip_address = "true"
-  # vpc_security_group_ids = [aws_security_group.app_sg.id]
-  user_data = base64encode(data.template_file.user_data.rendered)
+  vpc_security_group_ids = [aws_security_group.app_sg.id]
+  user_data              = base64encode(data.template_file.user_data.rendered)
   #     templatefile("user.tpl", {user_data = <<EOF
   # #!/bin/bash
   # echo "# App Environment Variables"
@@ -392,10 +392,10 @@ resource "aws_launch_template" "lt" {
       encrypted             = true
     }
   }
-  network_interfaces {
-    associate_public_ip_address = true
-    security_groups             = [aws_security_group.app_sg.id]
-  }
+  # network_interfaces {
+  #   associate_public_ip_address = true
+  #   security_groups             = [aws_security_group.app_sg.id]
+  # }
   iam_instance_profile {
     name = aws_iam_instance_profile.ec2_profile.id
   }

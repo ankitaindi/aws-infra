@@ -36,6 +36,9 @@ Apply the configuration:
 2) This will create the infrastructure defined in your configuration
 3) Review the output to ensure that everything was created correctly
 
+Command to import ssl certificate
+aws acm import-certificate --certificate fileb://demo_ankitaindi_me.crt --private-key fileb://pk.key  --certificate-chain fileb://demo_ankitaindi_me.ca-bundle --profile=demo
+
 
 
 
